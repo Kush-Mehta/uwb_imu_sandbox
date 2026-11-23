@@ -1,0 +1,44 @@
+# Gazebo <-> ROS 2 topic bridge of the UWB-IMU Sandbox
+- ros_topic_name: /clock
+  gz_topic_name: /clock
+  ros_type_name: rosgraph_msgs/msg/Clock
+  gz_type_name: gz.msgs.Clock
+  direction: GZ_TO_ROS
+
+# UWB tag output (same text line as the real tag's serial port)
+- ros_topic_name: /sandbox/uwb/serial
+  gz_topic_name: /uwb/tag1/serial
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /sandbox/uwb/truth
+  gz_topic_name: /uwb/tag1/truth
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+
+# IMU (with errors) and its ground truth
+- ros_topic_name: /sandbox/imu/raw
+  gz_topic_name: /imu/raw
+  ros_type_name: sensor_msgs/msg/Imu
+  gz_type_name: gz.msgs.IMU
+  direction: GZ_TO_ROS
+- ros_topic_name: /sandbox/imu/truth
+  gz_topic_name: /imu/truth
+  ros_type_name: sensor_msgs/msg/Imu
+  gz_type_name: gz.msgs.IMU
+  direction: GZ_TO_ROS
+
+# exact robot pose, for scoring
+- ros_topic_name: /ground_truth/odom
+  gz_topic_name: /ground_truth/odom
+  ros_type_name: nav_msgs/msg/Odometry
+  gz_type_name: gz.msgs.Odometry
+  direction: GZ_TO_ROS
+
+# drive the robot
+- ros_topic_name: /cmd_vel
+  gz_topic_name: /cmd_vel
+  ros_type_name: geometry_msgs/msg/Twist
+  gz_type_name: gz.msgs.Twist
+  direction: ROS_TO_GZ
