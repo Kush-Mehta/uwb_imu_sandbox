@@ -4,7 +4,8 @@
   <name>uwb_imu_sandbox_gazebo</name>
   <version>0.1.0</version>
   <description>Gazebo Harmonic plugins (UWB anchor/tag, realistic IMU), sealed sensor models and the test room world of the UWB-IMU Sandbox.</description>
-  <maintainer email="24110177@iitgn.ac.in">Parshva Patel</maintainer>
+  <maintainer email="24110177@iitgn.ac.in">Kush Mehta</maintainer>
+  <maintainer email="parshvapatel1456@gmail.com">Parshva Patel</maintainer>
   <license>Apache-2.0</license>
   <author>Parshva Patel</author>
   <author>Kush Mehta</author>
