@@ -4,7 +4,7 @@
   <name>uwb_imu_sandbox_msgs</name>
   <version>0.1.0</version>
   <description>Message types of the UWB-IMU Sandbox.</description>
-  <maintainer email="YOUR_PUBLIC_EMAIL">Parshva Patel</maintainer>
+  <maintainer email="24110177@iitgn.ac.in">Parshva Patel</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

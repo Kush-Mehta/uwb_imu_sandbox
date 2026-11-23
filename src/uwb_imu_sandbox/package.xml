@@ -4,7 +4,7 @@
   <name>uwb_imu_sandbox</name>
   <version>0.1.0</version>
   <description>UWB-IMU Sandbox: ROS 2 nodes, bridge and launch files for testing indoor UWB + IMU localization in Gazebo with realistic sensor plugins.</description>
-  <maintainer email="YOUR_PUBLIC_EMAIL">Parshva Patel</maintainer>
+  <maintainer email="24110177@iitgn.ac.in">Parshva Patel</maintainer>
   <license>Apache-2.0</license>
   <author>Parshva Patel</author>
   <author>Kush Mehta</author>
