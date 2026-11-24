@@ -64,7 +64,7 @@ add_executable(imu_replay src/tools/imu_replay.cpp)
 target_link_libraries(imu_replay uwb_imu_sandbox_core)
 install(TARGETS uwb_replay imu_replay RUNTIME DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY worlds models config DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY worlds models DESTINATION share/${PROJECT_NAME})
 
 ament_environment_hooks(
   "${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in"
