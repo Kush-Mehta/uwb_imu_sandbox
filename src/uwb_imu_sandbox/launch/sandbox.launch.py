@@ -36,7 +36,7 @@ def generate_launch_description():
     gui = LaunchConfiguration('gui')
     world = LaunchConfiguration('world')
     gz_args = PythonExpression([
-        "'-r -v 2 ' + ('' if '", gui, "' == 'true' else '-s ') + '", world, "'"])
+        "'-r -v 1 ' + ('' if '", gui, "' == 'true' else '-s ') + '", world, "'"])
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
@@ -46,7 +46,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('gui', default_value='true',
                               description='show the Gazebo window'),
-        DeclareLaunchArgument('world', default_value='uwb_room.sdf',
+        DeclareLaunchArgument('world', default_value='uwb_warehouse.sdf',
                               description='world file'),
         DeclareLaunchArgument('demo', default_value='false',
                               description='drive the robot around a loop'),
@@ -58,6 +58,8 @@ def generate_launch_description():
         DeclareLaunchArgument('gz_partition', default_value=default_partition,
                               description='Gazebo transport partition of this run'),
         SetEnvironmentVariable('GZ_PARTITION', partition),
+        # keep Qt's harmless GUI warnings out of the terminal
+        SetEnvironmentVariable('QT_LOGGING_RULES', '*.debug=false;*.warning=false'),
         LogInfo(msg=['Gazebo partition of this run: ', partition]),
         gazebo,
         Node(package='ros_gz_bridge', executable='parameter_bridge', name='sandbox_bridge',

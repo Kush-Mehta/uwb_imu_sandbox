@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Demo driver: drives the robot around the test room on its own.
+"""Demo driver: drives the robot around the warehouse on its own.
 
-It follows a fixed loop of waypoints that passes in and out of the shadows
-of the two pillars, so every anchor goes through LOS, near-edge and NLOS
+It follows a fixed loop of waypoints through the main aisle, the dock area
+and past the rack ends, so every anchor goes through LOS, near-edge and NLOS
 conditions.  It steers with the simulator's exact pose (/ground_truth/odom),
 which is fine for a demo; it is not part of any localization.
+For another world, pass your own loop with the `waypoints` parameter.
 """
 import math
 
@@ -16,15 +17,14 @@ from rclpy.node import Node
 
 # x, y in the world frame [m]
 DEFAULT_LOOP = [
-    5.5, 0.0,
-    5.5, -4.8,
-    1.0, -4.8,
-    0.0, -2.5,
-    -1.0, -4.8,
-    -6.5, -4.8,
-    -6.5, 3.0,
-    0.0, 4.2,
-    5.5, 3.0,
+    2.6, 0.0,
+    4.4, -1.0,
+    4.0, -1.7,
+    1.5, -1.7,
+    -4.4, -1.6,
+    -4.9, 0.0,
+    -4.4, 1.5,
+    1.5, 0.9,
     0.0, 0.0,
 ]
 

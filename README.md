@@ -5,7 +5,7 @@ localization with UWB and an IMU. It has:
 
 - **A UWB plugin.** The same plugin works as an anchor or a tag. The tag ranges to the anchors one after the other, like the real tag, and prints the same serial line. Range error, signal fields, dropouts and blocked signals come from real measurements.
 - **An IMU plugin.** It takes the exact motion from Gazebo and adds the measured jitter, sample timing and output resolution. It also adds a new random turn-on bias every time it starts.
-- **A built-in Gazebo world.** It is a copy of our test room: walls, two pillars and four anchors.
+- **Built-in Gazebo worlds.** The default is an indoor warehouse (12 x 10 m): rack rows, columns, pallets, a conveyor and four anchors on 4 m poles. A smaller room with two pillars is included as `uwb_room.sdf` (`world:=uwb_room.sdf`).
 - **ROS 2 nodes:** `uwb_node`, `imu_node`, an empty `algorithm_node` for your own algorithm, a demo driver and a self-check.
 
 No localization algorithm or ML model is included. You bring your own.
@@ -49,7 +49,7 @@ You should see `35 tests, 0 errors, 0 failures`. They check the obstacle geometr
 ros2 launch uwb_imu_sandbox sandbox.launch.py
 ```
 
-The Gazebo window opens with the room. Drive the robot with the **Drive the robot** panel on the right: use the arrow buttons, or the keyboard tab.
+The Gazebo window opens with the warehouse. Drive the robot with the **Drive the robot** panel on the right: use the arrow buttons, or the keyboard tab.
 
 To let it drive a loop on its own, start it like this:
 
@@ -57,7 +57,7 @@ To let it drive a loop on its own, start it like this:
 ros2 launch uwb_imu_sandbox sandbox.launch.py demo:=true
 ```
 
-The loop goes in and out of the pillar shadows. Add `gui:=false` to run without a window.
+The loop runs through the main aisle, the dock area and past the rack ends, in and out of the racks' shadows (it is made for the warehouse; for another world, pass your own `waypoints`). Add `gui:=false` to run without a window.
 
 **Step 3: health check (second terminal, while step 2 runs).**
 
@@ -84,7 +84,7 @@ ros2 topic echo /uwb/truth         # true distance, LOS or not, why a slot faile
 ros2 topic echo /sandbox/uwb/serial   # the raw tag line, same format as the real tag
 ```
 
-To see NLOS, drive the robot to around (0, 0). Anchor 3 is then behind its pillar: `/uwb/truth` shows `line_of_sight: false` and the `quality` in `/uwb/range` drops.
+To see NLOS, drive the robot to around (-3, 1.4), next to the north rack row. Anchor 1 is then behind the rack and its goods: `/uwb/truth` shows `line_of_sight: false` and the `quality` in `/uwb/range` drops. Right against a rack (about 0.5 m from it) the path crosses more than 1 m of material and that anchor gives no reading at all.
 
 **Step 5: send the UWB data to an outside program (for example an ML pipeline).**
 
@@ -114,7 +114,7 @@ ros2 bag record -s mcap /uwb/range /uwb/truth /imu /sandbox/imu/truth /ground_tr
 ```bash
 # trajectory.csv: header, then rows "t,x,y,z" of the tag
 ros2 run uwb_imu_sandbox_gazebo uwb_replay \
-  install/uwb_imu_sandbox_gazebo/share/uwb_imu_sandbox_gazebo/worlds/uwb_room.sdf \
+  install/uwb_imu_sandbox_gazebo/share/uwb_imu_sandbox_gazebo/worlds/uwb_warehouse.sdf \
   install/uwb_imu_sandbox_gazebo/share/uwb_imu_sandbox_gazebo/models/uwb_imu_sandbox_data/uwb_model.bin \
   trajectory.csv 42 > sim_ranges.csv
 ```
@@ -134,7 +134,7 @@ ros2 run uwb_imu_sandbox_gazebo uwb_replay \
 | `/cmd_vel` | `geometry_msgs/Twist` | drive the robot |
 | `/sandbox/uwb/serial` | `std_msgs/String` | raw tag line `[net,anchor,range,rx,fp,quality,delta]` |
 
-The four UWB signal fields are **normalised, unitless values (0..100)**, not dBm. They keep the order of the real quantity: higher `rx_level` means a stronger signal, and `quality` drops when a signal is blocked. They also keep how the fields behave with distance and obstacles, so an LOS/NLOS classifier or range filter can be trained and tested on them. In our tests, a classifier trained only on simulated fields got about 98% of real held-out measurements right.
+The four UWB signal fields are **normalised, unitless values (0..100)**, not dBm. They keep the order of the real quantity: higher `rx_level` means a stronger signal, and `quality` drops when a signal is blocked. They also keep how the fields behave with distance and obstacles, so an LOS/NLOS classifier or range filter can be trained and tested on them. In our tests, a classifier trained only on simulated fields got about 97% of real held-out measurements right.
 
 ## 4. Use it for your algorithm
 

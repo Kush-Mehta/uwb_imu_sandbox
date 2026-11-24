@@ -1,0 +1,372 @@
+<?xml version="1.0"?>
+<!--
+  UWB-IMU Sandbox default world: an indoor warehouse, 12 m x 10 m.
+  Two 2.4 m rack rows, steel columns, pallet stacks, a conveyor and a dock
+  office. Four UWB anchors on poles at 4 m. Every obstacle uses a
+  primitive collision shape, so the UWB plugin sees it; the floor lines
+  are visual only.
+-->
+<sdf version="1.9">
+  <world name="uwb_warehouse">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <gravity>0 0 -9.80665</gravity>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+
+    <!-- Gazebo window layout: camera looks down on the warehouse from the south -->
+    <gui fullscreen="0">
+      <plugin filename="MinimalScene" name="3D View">
+        <gz-gui>
+          <title>3D View</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="string" key="state">docked</property>
+        </gz-gui>
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.5 0.5 0.5</ambient_light>
+        <background_color>0.85 0.88 0.92</background_color>
+        <camera_pose>0 -11.5 12.0 0 0.82 1.5708</camera_pose>
+      </plugin>
+      <plugin filename="GzSceneManager" name="Scene Manager"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="InteractiveViewControl" name="Interactive view control"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="CameraTracking" name="Camera Tracking"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="MarkerManager" name="Marker manager"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="SelectEntities" name="Select Entities"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="VisualizationCapabilities" name="Visualization Capabilities"><gz-gui><property key="resizable" type="bool">false</property><property key="width" type="double">5</property><property key="height" type="double">5</property><property key="state" type="string">floating</property><property key="showTitleBar" type="bool">false</property></gz-gui></plugin>
+      <plugin filename="WorldControl" name="World control">
+        <gz-gui>
+          <title>World control</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">72</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="left" target="left"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <play_pause>true</play_pause>
+        <step>true</step>
+        <start_paused>false</start_paused>
+        <use_event>true</use_event>
+      </plugin>
+      <plugin filename="WorldStats" name="World stats">
+        <gz-gui>
+          <title>World stats</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">110</property>
+          <property type="double" key="width">290</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="right" target="right"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <sim_time>true</sim_time>
+        <real_time>true</real_time>
+        <real_time_factor>true</real_time_factor>
+        <iterations>true</iterations>
+      </plugin>
+      <!-- drive the robot from the window (publishes /cmd_vel) -->
+      <plugin filename="Teleop" name="Teleop">
+        <gz-gui>
+          <title>Drive the robot</title>
+          <property type="string" key="state">docked</property>
+        </gz-gui>
+        <topic>/cmd_vel</topic>
+      </plugin>
+      <plugin filename="EntityTree" name="Entity tree">
+        <gz-gui><property type="string" key="state">docked</property></gz-gui>
+      </plugin>
+      <plugin filename="ComponentInspector" name="Component inspector">
+        <gz-gui><property type="string" key="state">docked</property></gz-gui>
+      </plugin>
+    </gui>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 12 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -0.9</direction>
+    </light>
+
+    <model name="floor">
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><plane><normal>0 0 1</normal><size>60 60</size></plane></geometry></collision>
+        <visual name="v"><geometry><plane><normal>0 0 1</normal><size>12.5 10.5</size></plane></geometry>
+          <material><ambient>0.58 0.60 0.62 1</ambient><diffuse>0.58 0.60 0.62 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 5.125 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>12.5 0.25 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>12.5 0.25 6.0</size></box></geometry>
+          <material><ambient>0.8 0.81 0.8 1</ambient><diffuse>0.8 0.81 0.8 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -5.125 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>12.5 0.25 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>12.5 0.25 6.0</size></box></geometry>
+          <material><ambient>0.8 0.81 0.8 1</ambient><diffuse>0.8 0.81 0.8 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <pose>6.125 0 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.25 10.0 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.25 10.0 6.0</size></box></geometry>
+          <material><ambient>0.8 0.81 0.8 1</ambient><diffuse>0.8 0.81 0.8 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-6.125 0 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.25 10.0 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.25 10.0 6.0</size></box></geometry>
+          <material><ambient>0.8 0.81 0.8 1</ambient><diffuse>0.8 0.81 0.8 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rack_row_north">
+      <static>true</static>
+      <pose>-2.2 2.9 1.2 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>6.0 1.0 2.4</size></box></geometry></collision>
+        <visual name="v1"><pose>-3.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v2"><pose>-3.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v3"><pose>-1.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v4"><pose>-1.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v5"><pose>1.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v6"><pose>1.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v7"><pose>3.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v8"><pose>3.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v9"><pose>0.000 -0.460 -1.050 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v10"><pose>0.000 0.460 -1.050 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v11"><pose>-2.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v12"><pose>-2.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v13"><pose>0.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v14"><pose>0.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v15"><pose>2.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v16"><pose>2.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v17"><pose>0.000 -0.460 -0.250 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v18"><pose>0.000 0.460 -0.250 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v19"><pose>-2.000 0.000 -0.140 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v20"><pose>-2.000 0.000 0.200 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v21"><pose>2.000 0.000 -0.140 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v22"><pose>2.000 0.000 0.200 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v23"><pose>0.000 -0.460 0.550 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v24"><pose>0.000 0.460 0.550 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v25"><pose>-2.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v26"><pose>-2.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v27"><pose>0.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v28"><pose>0.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v29"><pose>2.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v30"><pose>2.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rack_row_south">
+      <static>true</static>
+      <pose>-2.2 -2.9 1.2 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>6.0 1.0 2.4</size></box></geometry></collision>
+        <visual name="v1"><pose>-3.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v2"><pose>-3.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v3"><pose>-1.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v4"><pose>-1.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v5"><pose>1.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v6"><pose>1.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v7"><pose>3.000 -0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v8"><pose>3.000 0.460 0.000 0 0 0</pose><geometry><box><size>0.08 0.08 2.4</size></box></geometry><material><ambient>0.95 0.45 0.08 1</ambient><diffuse>0.95 0.45 0.08 1</diffuse></material></visual>
+        <visual name="v9"><pose>0.000 -0.460 -1.050 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v10"><pose>0.000 0.460 -1.050 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v11"><pose>-2.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v12"><pose>-2.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v13"><pose>0.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v14"><pose>0.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v15"><pose>2.000 0.000 -0.940 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v16"><pose>2.000 0.000 -0.600 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v17"><pose>0.000 -0.460 -0.250 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v18"><pose>0.000 0.460 -0.250 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v19"><pose>-2.000 0.000 -0.140 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v20"><pose>-2.000 0.000 0.200 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v21"><pose>2.000 0.000 -0.140 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v22"><pose>2.000 0.000 0.200 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v23"><pose>0.000 -0.460 0.550 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v24"><pose>0.000 0.460 0.550 0 0 0</pose><geometry><box><size>6.0 0.06 0.1</size></box></geometry><material><ambient>0.1 0.28 0.62 1</ambient><diffuse>0.1 0.28 0.62 1</diffuse></material></visual>
+        <visual name="v25"><pose>-2.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v26"><pose>-2.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+        <visual name="v27"><pose>0.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v28"><pose>0.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+        <visual name="v29"><pose>2.000 0.000 0.660 0 0 0</pose><geometry><box><size>1.6 0.85 0.12</size></box></geometry><material><ambient>0.62 0.47 0.28 1</ambient><diffuse>0.62 0.47 0.28 1</diffuse></material></visual>
+        <visual name="v30"><pose>2.000 0.000 1.000 0 0 0</pose><geometry><box><size>1.4 0.75 0.55</size></box></geometry><material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="column_1">
+      <static>true</static>
+      <pose>2.6 2.9 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 6.0</size></box></geometry>
+          <material><ambient>0.35 0.37 0.4 1</ambient><diffuse>0.35 0.37 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="column_2">
+      <static>true</static>
+      <pose>2.6 -2.9 3.0 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 6.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 6.0</size></box></geometry>
+          <material><ambient>0.35 0.37 0.4 1</ambient><diffuse>0.35 0.37 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="pallet_stack_1">
+      <static>true</static>
+      <pose>4.0 -4.2 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.0 0.9 1.2</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.9 1.2</size></box></geometry>
+          <material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="pallet_stack_2">
+      <static>true</static>
+      <pose>5.1 -4.2 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.0 0.9 0.8</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.9 0.8</size></box></geometry>
+          <material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="pallet_stack_3">
+      <static>true</static>
+      <pose>4.0 4.2 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.0 0.9 1.2</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.9 1.2</size></box></geometry>
+          <material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="pallet_stack_4">
+      <static>true</static>
+      <pose>5.1 4.2 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.0 0.9 1.2</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.9 1.2</size></box></geometry>
+          <material><ambient>0.74 0.6 0.4 1</ambient><diffuse>0.74 0.6 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="conveyor">
+      <static>true</static>
+      <pose>4.3 1.6 0.45 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.6 0.6 0.9</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>2.6 0.6 0.9</size></box></geometry>
+          <material><ambient>0.22 0.24 0.27 1</ambient><diffuse>0.22 0.24 0.27 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="dock_office">
+      <static>true</static>
+      <pose>0.6 -4.3 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.8 1.4 3.0</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.8 1.4 3.0</size></box></geometry>
+          <material><ambient>0.45 0.47 0.52 1</ambient><diffuse>0.45 0.47 0.52 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="floor_line_1">
+      <static>true</static>
+      <pose>-2.2 2.2 0.003 0 0 0</pose>
+      <link name="link">
+        <visual name="v"><geometry><box><size>6.6 0.08 0.006</size></box></geometry>
+          <material><ambient>0.95 0.78 0.1 1</ambient><diffuse>0.95 0.78 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="floor_line_2">
+      <static>true</static>
+      <pose>-2.2 -2.2 0.003 0 0 0</pose>
+      <link name="link">
+        <visual name="v"><geometry><box><size>6.6 0.08 0.006</size></box></geometry>
+          <material><ambient>0.95 0.78 0.1 1</ambient><diffuse>0.95 0.78 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <model name="uwb_anchor_1">
+      <static>true</static>
+      <pose>-5.2 4.2 4.0 0 0 0</pose>
+      <link name="link">
+        <visual name="board"><geometry><box><size>0.08 0.06 0.10</size></box></geometry>
+          <material><ambient>0.1 0.35 0.85 1</ambient><diffuse>0.1 0.35 0.85 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 -2.0 0 0 0</pose><geometry><cylinder><radius>0.03</radius><length>4.0</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="UwbDevice" name="uwb_imu_sandbox::UwbDevice">
+        <role>anchor</role>
+        <id>1</id>
+      </plugin>
+    </model>
+    <model name="uwb_anchor_2">
+      <static>true</static>
+      <pose>5.2 4.2 4.0 0 0 0</pose>
+      <link name="link">
+        <visual name="board"><geometry><box><size>0.08 0.06 0.10</size></box></geometry>
+          <material><ambient>0.1 0.35 0.85 1</ambient><diffuse>0.1 0.35 0.85 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 -2.0 0 0 0</pose><geometry><cylinder><radius>0.03</radius><length>4.0</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="UwbDevice" name="uwb_imu_sandbox::UwbDevice">
+        <role>anchor</role>
+        <id>2</id>
+      </plugin>
+    </model>
+    <model name="uwb_anchor_3">
+      <static>true</static>
+      <pose>5.2 -4.2 4.0 0 0 0</pose>
+      <link name="link">
+        <visual name="board"><geometry><box><size>0.08 0.06 0.10</size></box></geometry>
+          <material><ambient>0.1 0.35 0.85 1</ambient><diffuse>0.1 0.35 0.85 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 -2.0 0 0 0</pose><geometry><cylinder><radius>0.03</radius><length>4.0</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="UwbDevice" name="uwb_imu_sandbox::UwbDevice">
+        <role>anchor</role>
+        <id>3</id>
+      </plugin>
+    </model>
+    <model name="uwb_anchor_4">
+      <static>true</static>
+      <pose>-5.2 -4.2 4.0 0 0 0</pose>
+      <link name="link">
+        <visual name="board"><geometry><box><size>0.08 0.06 0.10</size></box></geometry>
+          <material><ambient>0.1 0.35 0.85 1</ambient><diffuse>0.1 0.35 0.85 1</diffuse></material></visual>
+        <visual name="pole"><pose>0 0 -2.0 0 0 0</pose><geometry><cylinder><radius>0.03</radius><length>4.0</length></cylinder></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient><diffuse>0.3 0.3 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="UwbDevice" name="uwb_imu_sandbox::UwbDevice">
+        <role>anchor</role>
+        <id>4</id>
+      </plugin>
+    </model>
+
+    <include>
+      <uri>model://sandbox_robot</uri>
+      <name>sandbox_robot</name>
+      <pose>0 0 0.0 0 0 0</pose>
+    </include>
+  </world>
+</sdf>
